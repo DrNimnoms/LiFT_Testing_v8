@@ -16,6 +16,8 @@ created 10/3/2013
   
   
   void setup() { 
+    controlTime=200000;  // loop time in uSec  .2 s loops ==> 5Hz
+    dt=controlTime/1000000.0;  // control time in sec
     pinInital();    // configure arduino due pins
   }
   
@@ -23,17 +25,12 @@ created 10/3/2013
   {
     timeStamp=micros();                // microseconds since board initialized, overflow/rollover after ~11.9 hours (2^32-1 uS)
                                        // returned in 1 microsecond resolution
-    if(!modeInfo.selfCheck) BMESelfTest();
     
-    measCalAllstates();                // Measures and calculates all states of half string
-    
-    checkFlags();                     //checks and sets flags and set priority
-    
-    BMCcomm();         //send and receive information through ethernet to BMC every 1 sec
-    
-    checkMode(BMCcommand);
-    
-    setContactors();
+    pressure=avgADC(presIn1Pin,5)*presConst-presOffset;          //get pressure
+    presRate= biquadFilter(biPresrate, pressure);                // filtered pressure rate
+    Serial.print(pressure);
+    Serial.print(", ");
+    Serial.println(presRate);
     
    //if(uartPrint) Serial.println(timeElapsed(timeStamp));
     timeCheck();                //tries to keep loop time roughly constant

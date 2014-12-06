@@ -108,8 +108,8 @@
   
   
  // loop timing variables
- const long controlTime=200000;  // loop time in uSec  .2 s loops ==> 5Hz
- const float dt=controlTime/1000000.0;  // control time in sec
+ long controlTime=200000;  // loop time in uSec  .2 s loops ==> 5Hz
+ float dt=controlTime/1000000.0;  // control time in sec
  unsigned long timeStamp=0;          // used to keep track of the loop time
  unsigned long balanceTimeStamp=0;  // keeps track of balancing timing
  unsigned long bmcComTimeStamp=0;   // keeps track of time since last communication
