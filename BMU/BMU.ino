@@ -19,20 +19,21 @@ created 10/3/2013
   
   void setup() { 
     
+    pinInital();    // configure arduino due pins
+    delay(2000);
     if(testNum==1){
-      controlTime=200000;  // loop time in uSec  .2 s loops ==> 5Hz
-      dt=controlTime/1000000.0;  // control time in sec
+      controlTime = 200000;  // loop time in uSec  .2 s loops ==> 5Hz
+      dt = controlTime/1000000.0;  // control time in sec
       TestFilterInit((BiquadType&) testFilter,1.0,0.0078,0.0156,0.0078,-1.7347,0.7660,0,0); //initialize filter for pressure rate
-      Serial.println("pressure   \t   pressurerate");
+      Serial.println("pressure, dpressure, filtered dpressure");
     }
     
     if(testNum==2){
-      controlTime=200000;  // loop time in uSec  .2 s loops ==> 5Hz
-      dt=controlTime/1000000.0;  // control time in sec
+      controlTime = 200000;  // loop time in uSec  .2 s loops ==> 5Hz
+      dt = controlTime/1000000.0;  // control time in sec
       Serial.println("Cell 1, Cell 2,  Cell 3, Cell Sum, V_ref2, T1, T2, T3, T4, Ti");
     }
     
-    pinInital();    // configure arduino due pins
   }
   
   void loop() 
@@ -43,6 +44,7 @@ created 10/3/2013
     if(testNum==1) pressureTest();
     if(testNum==2) tempTest(0,1,false);
     
+//    Serial.println(timeElapsed(timeStamp));
    //if(uartPrint) Serial.println(timeElapsed(timeStamp));
     timeCheck();                //tries to keep loop time roughly constant
   }
@@ -99,11 +101,14 @@ created 10/3/2013
  *----------------------------------------------------------------------------*/
   void pressureTest(){ 
     pressure=avgADC(presIn1Pin,3)*presConst-presOffset;          //get pressure
+    presRate = (pressure-presOld)/dt;
+    float presRateFil= biquadFilter(testFilter, presRate); // filtered pressure rate
     presOld=pressure;
-    float presRate1= biquadFilter(testFilter, pressure-presOld);                // filtered pressure rate
-    Serial.print(pressure);
+    Serial.print(pressure,4);
     Serial.print(", ");
-    Serial.println(presRate); 
+    Serial.print(presRate,4); 
+    Serial.print(", ");
+    Serial.println(presRateFil,4); 
   }
   
   /*------------------------------------------------------------------------------

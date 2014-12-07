@@ -32,7 +32,7 @@ void pinInital(void){
     BME[i].GPIO=0;
   }
   BMESelfTest();      // self-check all BMEs
-  while(minVol==7){
+//  while(minVol==7){
     if(pseudoDataFlag){ 
       PseudoData();
     }
@@ -40,7 +40,7 @@ void pinInital(void){
       getBMEData();     // gets the data from all BMEs
     } 
     minVol=findMinV();
-  }
+//  }
   initalizeSoc();
   //************************ BMU setup *************************// 
   modeInfo.currentMode=STOPMODE;
