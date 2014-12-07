@@ -117,8 +117,8 @@ void intitBiquadFil()
   biPresrate.b2 = 0;                //input k-2 coefficient
   biPresrate.a1 = 0;                //output k-1 coefficient
   biPresrate.a2 = 0;                //output k-2 coefficient
-  biPresrate.x1 = pressure-presOld;  //filter state
-  biPresrate.x2 = biPresrate.x1;    //filter state
+  biPresrate.x1 = 0;  //filter state
+  biPresrate.x2 = 0;    //filter state
 }
 
 /*------------------------------------------------------------------------------
