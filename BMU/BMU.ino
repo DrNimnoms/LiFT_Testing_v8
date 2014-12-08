@@ -117,8 +117,8 @@ created 10/3/2013
  *----------------------------------------------------------------------------*/
   void TestFilterInit(BiquadType& tempoFilter,float g,float b_0,float b_1,float b_2,float a_1,float a_2,float x_1,float x_2){
     
-    tempoFilter.gain=g;//filter gain
-    tempoFilter.b0 = b_0;              //input k coefficient
+    tempoFilter.gain=g;      //filter gain
+    tempoFilter.b0 = b_0;     //input k coefficient
     tempoFilter.b1 = b_1;              //input k-1 coefficient
     tempoFilter.b2 = b_2;                //input k-2 coefficient
     tempoFilter.a1 = a_1;                //output k-1 coefficient

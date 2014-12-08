@@ -41,9 +41,9 @@
 //BMU ADC conversion constants
   #define curConst 0.08587        //80/V*3.3V/4095*4.01ohm/3.01ohm  sensor resolution*adc resolution*voltage divider
   #define volConst 0.0482  //.0439    //(174Kohm+10Kohm)/10Kohm*(10kohm+5.1kohm)/5.1kohm*3.3V/4095
-//  #define presConst 0.0061034   //1 kpa/5V/0.018*4.7ohm/3.2ohm*3.3V/4095*0.14503 gpsi/kpa
-  #define presConst 0.0012986 
-  #define presOffset 0.0058016     //0.04 kpa 0.14503 gpsi/kpa
+  #define presConst 0.0019073   //1 kpa/5V/0.018*4.7ohm/3.2ohm*3.3V/4095*0.14503 gpsi/kpa
+//  #define presConst 0.0012986     //1 kpa/5V/0.018*3.3V/4095*0.14503 gpsi/kpa
+  #define presOffset 0.3223     //0.04/0.018 kpa * 0.14503 gpsi/kpa
   #define capConst 0.0000555556    //0.2 sec==>.000055556 hours
 
 // BMU battery prameters
