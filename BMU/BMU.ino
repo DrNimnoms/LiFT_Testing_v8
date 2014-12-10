@@ -24,7 +24,7 @@ created 10/3/2013
     if(testNum==1){
       controlTime = 200000;  // loop time in uSec  .2 s loops ==> 5Hz
       dt = controlTime/1000000.0;  // control time in sec
-      TestFilterInit((BiquadType&) testFilter,1.0,0.0078,0.0156,0.0078,-1.7347,0.7660,0,0); //initialize filter for pressure rate
+      TestFilterInit((BiquadType&) testFilter,1.0,0.0088,0.0177,0.0088,-1.7172,0.7525,0,0); //initialize filter for pressure rate
       Serial.println("pressure, dpressure, filtered dpressure");
     }
     
