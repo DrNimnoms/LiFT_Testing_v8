@@ -15,20 +15,20 @@ created 10/3/2013
   #include "BMU.h"           //all BMU variables
   
   BiquadType testFilter;
-  int testNum=1;  //1 for pressure test 2 fortemperature test
+  int testNum = 2;  //1 for pressure test 2 fortemperature test
   
   void setup() { 
     
     pinInital();    // configure arduino due pins
     delay(2000);
-    if(testNum==1){
+    if(testNum == 1){
       controlTime = 200000;  // loop time in uSec  .2 s loops ==> 5Hz
       dt = controlTime/1000000.0;  // control time in sec
       TestFilterInit((BiquadType&) testFilter,1.0,0.0088,0.0177,0.0088,-1.7172,0.7525,0,0); //initialize filter for pressure rate
       Serial.println("pressure, dpressure, filtered dpressure");
     }
     
-    if(testNum==2){
+    if(testNum == 2){
       controlTime = 200000;  // loop time in uSec  .2 s loops ==> 5Hz
       dt = controlTime/1000000.0;  // control time in sec
       Serial.println("Cell 1, Cell 2,  Cell 3, Cell Sum, V_ref2, T1, T2, T3, T4, Ti");
@@ -37,14 +37,17 @@ created 10/3/2013
   }
   
   void loop() 
-  {
-    timeStamp=micros();                // microseconds since board initialized, overflow/rollover after ~11.9 hours (2^32-1 uS)
+  { 
+    static int stopTest = 0;
+    static int DCC = 0; //7 can be all 3 layers
+    timeStamp = micros();                // microseconds since board initialized, overflow/rollover after ~11.9 hours (2^32-1 uS)
                                        // returned in 1 microsecond resolution
-    
     if(testNum==1) pressureTest();
-    if(testNum==2) tempTest(0,1,false);
+    if(testNum==2) stopTest = tempTest(0,DCC,false);
+    if (stopTest == 1) {DCC = -1;}
     
-//    Serial.println(timeElapsed(timeStamp));
+
+//   Serial.println(timeElapsed(timeStamp));
    //if(uartPrint) Serial.println(timeElapsed(timeStamp));
     timeCheck();                //tries to keep loop time roughly constant
   }
@@ -53,10 +56,14 @@ created 10/3/2013
  * temperature test turns on a risistor on BME tempoBme+1 and layer tempoLayer+1
  * prints voltages and temperatures of the given BME
  *----------------------------------------------------------------------------*/
-  void tempTest(int tempoBme, int tempoLayer, boolean tempFan){
-    
-    if(tempoBme>=0 && tempoBme>=13 && tempoLayer>=0 && tempoLayer<=2){
-      BME[tempoBme].DCC = (1<<(2-tempoLayer));    // balance by enabling the bit flag corresponding to the i-th virtual layer
+  int tempTest(int tempoBme, int tempoLayer, boolean tempFan){
+    // tempoBme is the BME number
+    // tempoLayer is the layer in the BME stack
+    // tempFan is the fan on command
+    int stopTest;
+    if(tempoBme>=0 && tempoBme<=13 && tempoLayer>=0 && tempoLayer<=7){ // if the bme and layer values make sense
+      BME[tempoBme].DCC = tempoLayer;    // balance by enabling the bit flag corresponding to the i-th virtual layer
+      //BME[tempoBme].DCC = (1<<(2-tempoLayer));    // balance by enabling the bit flag corresponding to the i-th virtual layer
       CLRCELL(tempoBme);
       ADCV(tempoBme,0);          //  start voltage conversion
       delayMicroseconds(BMEConDelay1);
@@ -73,7 +80,8 @@ created 10/3/2013
       delayMicroseconds(BMEConDelay2);
       RDSTATA((BMEdata&) BME[tempoBme]);  // get chip temperatures, sum of battery module
 //      RDSTATB((BMEdata&) BME[tempoBme]);  // get flags
-      BME[tempoBme].GPIO=0x0f|((!tempFan)<<4);          // Sets the GPIO to 0 or 1 for the multiplexer
+      BME[tempoBme].GPIO = 0x0f|((!tempFan)<<4);          // Sets the GPIO to 0 or 1 for the multiplexer
+      //Serial.println("Am I Here?");
       WRCFG((BMEdata&) BME[tempoBme]);
       int2float((BMEdata&) BME[tempoBme]); // turn in to floats
       
@@ -91,8 +99,22 @@ created 10/3/2013
         Serial.print(", ");
       }
       Serial.println(BME[tempoBme].fiTemp,1);
+       stopTest = 0;
+      if (BME[tempoBme].fTemp[0] > 75) stopTest = 1; 
+      if (BME[tempoBme].fTemp[1] > 75) stopTest = 1;
+      if (BME[tempoBme].fTemp[2] > 75) stopTest = 1;
+      if (BME[tempoBme].fTemp[3] > 200){
+           stopTest = 1;   
+      }
+      if (BME[tempoBme].fiTemp > 80) stopTest = 1;
       
     }
+    else{
+      BME[tempoBme].DCC = 0;    // balance by enabling the bit flag corresponding to the i-th virtual layer
+      CLRCELL(tempoBme);
+      WRCFG((BMEdata&) BME[tempoBme]);
+    }
+    return stopTest;
   }
   
    /*------------------------------------------------------------------------------

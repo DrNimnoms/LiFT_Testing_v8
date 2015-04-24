@@ -28,8 +28,8 @@ void pinInital(void){
   delay(2);
   for(i=0;i<BMENum;i++){
     BME[i].addr=0x80+(i<<3);
-    BME[i].DCC=0;
-    BME[i].GPIO=0;
+    BME[i].DCC = 0;
+    BME[i].GPIO = 0;
   }
   BMESelfTest();      // self-check all BMEs
 //  while(minVol==7){
@@ -90,9 +90,9 @@ void pinInital(void){
   
   for(i=0;i<6;i++){
     if(BMUNum==0) mac[i] =  macTempo0[i];
-    if(BMUNum==0) mac[i] =  macTempo1[i];
-    if(BMUNum==0) mac[i] =  macTempo2[i];
-    if(BMUNum==0) mac[i] =  macTempo3[i];
+    if(BMUNum==1) mac[i] =  macTempo1[i];
+    if(BMUNum==2) mac[i] =  macTempo2[i];
+    if(BMUNum==3) mac[i] =  macTempo3[i];
   }
   
   
